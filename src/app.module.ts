@@ -19,6 +19,7 @@ const { username, password } = getMysqlUsernameAndPassword();
       username,
       password,
       database: 'vben-book-dev',
+      autoLoadEntities: true,
     }),
     UserModule,
     AuthModule,
