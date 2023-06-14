@@ -34,17 +34,12 @@ export const MENU_LIST = `[
           {
             "path":"analysis",
             "name":"Analysis",
-            "meta":{
-              "title":"routes.dashboard.analysis"
-            }
+            "meta":{"title":"routes.dashboard.analysis"}
           },
           {
             "path":"workbench",
             "name":"Workbench",
-            "meta":{
-              "title":"routes.dashboard.workbench",
-              "roles": "[\\"super\\"]"
-            }
+            "meta":{"title":"routes.dashboard.workbench","roles": "[\\"super\\"]"}
           }
         ]
       },
@@ -52,18 +47,12 @@ export const MENU_LIST = `[
         "path":"/charts",
         "name":"Charts",
         "redirect":"/charts/echarts/map",
-        "meta":{
-            "orderNo":500,
-            "icon":"ion:bar-chart-outline",
-            "title":"routes.demo.charts.charts"
-        },
+        "meta":{"orderNo":500,"icon":"ion:bar-chart-outline","title":"routes.demo.charts.charts"},
         "children":[
             {
                 "path":"baiduMap",
                 "name":"BaiduMap",
-                "meta":{
-                    "title":"routes.demo.charts.baiduMap"
-                }
+                "meta":{"title":"routes.demo.charts.baiduMap"}
             },
             {
                 "path":"aMap",
@@ -82,17 +71,13 @@ export const MENU_LIST = `[
             {
                 "path":"echarts",
                 "name":"Echarts",
-                "meta":{
-                    "title":"Echarts"
-                },
+                "meta":{"title":"Echarts"},
                 "redirect":"/charts/echarts/map",
                 "children":[
                     {
                         "path":"map",
                         "name":"Map",
-                        "meta":{
-                            "title":"routes.demo.charts.map"
-                        }
+                        "meta":{"title":"routes.demo.charts.map"}
                     },
                     {
                         "path":"line",
@@ -315,6 +300,19 @@ export const MENU_LIST = `[
                         }
                     }
                 ]
+            }
+        ]
+    },
+    {
+        "path":"/permission",
+        "name":"Permission",
+        "redirect":"/permission/menu",
+        "meta":{"orderNo":15,"icon":"ion:key-outline","title":"routes.demo.permission.permission"},
+        "children":[
+            {
+                "path":"menu",
+                "name":"PermissionMenu",
+                "meta":{"title":"routes.demo.permission.menu"}
             }
         ]
     }
