@@ -24,3 +24,16 @@
 
 - 1-7章使用：/sql/vben-book.sql
 - 8-10章使用：/sql/vben-book-dev(chapter9).sql
+
+### 电子书链接
+- 什么算epub电子书？可参考：
+https://www.imooc.com/video/17776
+
+- 未解压的电子书：
+链接: https://pan.baidu.com/s/1kl8KFSSs21tqJPjk5vKZ7g 提取码: d44s
+
+- 解压后的电子书：
+链接: https://pan.baidu.com/s/1kh_BS_oZS8GQMZkgplK_GA 提取码: 8p6d
+
+### Nginx服务器搭建
+http://www.youbaobao.xyz/admin-docs/guide/exercise/prepare.html
