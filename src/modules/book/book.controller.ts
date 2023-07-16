@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import {
   Controller,
   Get,
@@ -42,18 +40,8 @@ export class BookController {
         })
         .build(),
     ) file: Express.Multer.File) {
-    console.log(file);
-    const destDir = '/opt/homebrew/var/www/upload';
-    const destPath = path.resolve(destDir, file.originalname);
-    fs.writeFileSync(destPath, file.buffer);
     return wrapperResponse(
-      Promise.resolve().then(() => ({
-        originalName: file.originalname,
-        mimetype: file.mimetype,
-        size: file.size,
-        path: destPath,
-        dir: destDir,
-      })),
+      this.bookService.uploadBook(file),
       '上传文件成功',
     );
   }
