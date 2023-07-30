@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -29,6 +30,15 @@ export class BookController {
   @Get(':id')
   getBook(@Param('id', ParseIntPipe) id) {
     return 'get book:' + id;
+  }
+
+  @Post()
+  insertBook(@Body() body) {
+    console.log(body);
+    return wrapperResponse(
+      this.bookService.addBook(body),
+      '新增电子书成功',
+    );
   }
 
   @Post('upload')

@@ -70,4 +70,32 @@ export class BookService {
     const epub = new EpubBook(bookPath, file);
     return epub.parse();
   }
+
+  async addBook(params) {
+    const { title, author, fileName, category, categoryText, cover, language, publisher, rootFile } = params;
+    const insertSql = `INSERT INTO book(
+        fileName,
+        cover,
+        title,
+        author,
+        publisher,
+        bookId,
+        category,
+        categoryText,
+        language,
+        rootFile
+      ) VALUES(
+        '${fileName}',
+        '${cover}',
+        '${title}',
+        '${author}',
+        '${publisher}',
+        '${fileName}',
+        '${category}',
+        '${categoryText}',
+        '${language}',
+        '${rootFile}'
+      )`;
+    return this.repository.query(insertSql);
+  }
 }

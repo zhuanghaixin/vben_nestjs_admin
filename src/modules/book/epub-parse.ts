@@ -1,8 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import * as fse from 'fs-extra';
 import * as AdmZip from 'adm-zip';
 import * as XmlJS from 'xml2js';
-import { meta } from '@typescript-eslint/parser';
+import { NGINX_PATH } from '../../utils/const';
 
 export function unzip(bookPath, unzipPath) {
   const zip = new AdmZip(bookPath);
@@ -12,28 +13,28 @@ export function unzip(bookPath, unzipPath) {
 export function parseRootFile(unzipPath) {
   const containerFilePath = path.resolve(unzipPath, 'META-INF/container.xml');
   const containerXml = fs.readFileSync(containerFilePath, 'utf-8');
-  console.log(containerXml);
+  // console.log(containerXml);
   const { parseStringPromise } = XmlJS;
   return parseStringPromise(containerXml, {
     explicitArray: false,
   }).then((data) => {
-    console.log(data, data.container.rootfiles);
+    // console.log(data, data.container.rootfiles);
     return data.container.rootfiles.rootfile['$']['full-path'];
   });
 }
 
-export function parseContentOpf(unzipPath, filePath) {
+export function parseContentOpf(unzipPath, filePath, fileName) {
   // 获取content.opf路径
   const fullPath = path.resolve(unzipPath, filePath);
   const contentOpf = fs.readFileSync(fullPath, 'utf-8');
-  console.log(contentOpf);
+  // console.log(contentOpf);
   const { parseStringPromise } = XmlJS;
   return parseStringPromise(contentOpf, {
     explicitArray: false,
   }).then(async (data) => {
-    console.log(data);
+    // console.log(data);
     const { metadata } = data.package;
-    console.log(metadata);
+    // console.log(metadata);
     const title = metadata['dc:title']; // 书名
     const creator = metadata['dc:creator']; // 作者
     const language = metadata['dc:language']; // 语种
@@ -52,8 +53,8 @@ export function parseContentOpf(unzipPath, filePath) {
     封面：${cover}
     `);
     const rootDir = path.dirname(filePath);
-    const content = await parseContent(dir, 'toc.ncx', rootDir); // 解析目录
-    console.log(content);
+    const content = await parseContent(dir, 'toc.ncx', rootDir, fileName); // 解析目录
+    // console.log(content);
     return {
       title,
       creator,
@@ -66,13 +67,19 @@ export function parseContentOpf(unzipPath, filePath) {
   });
 }
 
-export async function parseContent(contentDir, contentFilePath, rootDir) {
+export async function parseContent(
+  contentDir,
+  contentFilePath,
+  rootDir,
+  fileName,
+) {
   const contentPath = path.resolve(contentDir, contentFilePath);
   const contentXml = fs.readFileSync(contentPath, 'utf-8');
   const { parseStringPromise } = XmlJS;
   const data = await parseStringPromise(contentXml, { explicitArray: false });
   const navMap = data.ncx.navMap.navPoint;
-  console.log(navMap);
+  const fileNameWithoutSuffix = fileName.replace('.epub', '');
+  // console.log(navMap);
   const navData = navMap.map((nav) => {
     const id = nav['$'].id;
     const playOrder = +nav['$'].playOrder;
@@ -82,8 +89,27 @@ export async function parseContent(contentDir, contentFilePath, rootDir) {
       id,
       playOrder,
       text,
-      href: `${rootDir}/${href}`,
+      href: `${fileNameWithoutSuffix}/${rootDir}/${href}`,
     };
   });
   return navData;
+}
+
+export function copyCoverImage(data, tmpDir) {
+  const { cover } = data;
+  if (!cover) {
+    return;
+  }
+  const coverPathname = cover.replace(tmpDir + '/', '');
+  const coverDir = path.resolve(NGINX_PATH, 'cover');
+  const coverNewPath = path.resolve(coverDir, coverPathname);
+  fse.mkdirpSync(coverDir);
+  fse.copySync(cover, coverNewPath);
+  return coverPathname;
+}
+
+export function copyUnzipBook(tmpDir, dirName) {
+  const bookDir = path.resolve(NGINX_PATH, 'book', dirName);
+  fse.mkdirpSync(bookDir);
+  fse.copySync(tmpDir, bookDir);
 }
