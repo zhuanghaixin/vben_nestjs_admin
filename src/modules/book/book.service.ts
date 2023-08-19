@@ -11,7 +11,11 @@ export class BookService {
   constructor(
     @InjectRepository(Book)
     private readonly repository: Repository<Book>,
-  ) {
+  ) {}
+
+  getBook(id) {
+    const sql = `SELECT * FROM book WHERE id="${id}"`;
+    return this.repository.query(sql);
   }
 
   getBookList(params: any = {}) {
@@ -71,6 +75,19 @@ export class BookService {
     return epub.parse();
   }
 
+  async updateBook(params) {
+    const { id, title, author, category, categoryText, language, publisher } = params;
+    const setSql = [];
+    if (title) {
+      setSql.push(`title="${title}"`);
+    }
+    if (author) {
+      setSql.push(`author="${author}"`);
+    }
+    const updateSql = `UPDATE book SET ${setSql.join(',')} WHERE id=${id}`;
+    return this.repository.query(updateSql);
+  }
+
   async addBook(params) {
     const { title, author, fileName, category, categoryText, cover, language, publisher, rootFile } = params;
     const insertSql = `INSERT INTO book(
@@ -97,5 +114,10 @@ export class BookService {
         '${rootFile}'
       )`;
     return this.repository.query(insertSql);
+  }
+
+  async deleteBook(id) {
+    const deleteSql = `DELETE FROM book WHERE id = ${id}`;
+    return this.repository.query(deleteSql);
   }
 }

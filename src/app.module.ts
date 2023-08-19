@@ -6,6 +6,7 @@ import { TestService } from './test.service';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookModule } from './modules/book/book.module';
+import { ContentsModule } from './modules/contents/contents.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { getMysqlUsernameAndPassword } from './utils';
 
@@ -28,6 +29,7 @@ const { username, password } = getMysqlUsernameAndPassword();
     AuthModule,
     BookModule,
     MenuModule,
+    ContentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, TestService],

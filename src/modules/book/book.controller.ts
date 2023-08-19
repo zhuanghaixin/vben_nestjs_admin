@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseFilePipeBuilder,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseInterceptors,
@@ -29,15 +31,34 @@ export class BookController {
 
   @Get(':id')
   getBook(@Param('id', ParseIntPipe) id) {
-    return 'get book:' + id;
+    return wrapperResponse(
+      this.bookService.getBook(id),
+      '查询电子书成功',
+    );
   }
 
   @Post()
   insertBook(@Body() body) {
-    console.log(body);
     return wrapperResponse(
       this.bookService.addBook(body),
       '新增电子书成功',
+    );
+  }
+
+  @Put()
+  updateBook(@Body() body) {
+    return wrapperResponse(
+      this.bookService.updateBook(body),
+      '更新电子书成功',
+    );
+  }
+
+  @Delete()
+  deleteBook(@Body() body) {
+    console.log(body);
+    return wrapperResponse(
+      this.bookService.deleteBook(body.id),
+      '删除电子书成功',
     );
   }
 
