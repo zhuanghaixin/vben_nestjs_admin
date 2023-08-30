@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TestService } from './test.service';
 import { UserModule } from './modules/user/user.module';
+import { RoleModule } from './modules/role/role.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookModule } from './modules/book/book.module';
 import { ContentsModule } from './modules/contents/contents.module';
@@ -26,6 +27,7 @@ const { username, password } = getMysqlUsernameAndPassword();
       logging: true,
     }),
     UserModule,
+    RoleModule,
     AuthModule,
     BookModule,
     MenuModule,

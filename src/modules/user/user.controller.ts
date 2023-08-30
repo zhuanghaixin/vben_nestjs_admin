@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { wrapperResponse } from '../../utils';
 
@@ -20,13 +20,27 @@ export class UserController {
   }
 
   @Get()
-  getAllUser() {
-    return this.userService.findAll();
+  getAllUser(@Query() query) {
+    return wrapperResponse(
+      this.userService.findAll(query),
+      '获取用户列表成功',
+    );
+  }
+
+  @Put()
+  update(@Body() body) {
+    return wrapperResponse(
+      this.userService.update(body),
+      '编辑用户成功',
+    );
   }
 
   @Post()
   create(@Body() body) {
-    return this.userService.create(body);
+    return wrapperResponse(
+      this.userService.create(body),
+      '新增用户成功',
+    );
   }
 
   @Delete(':id')
