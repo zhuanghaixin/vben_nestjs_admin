@@ -18,7 +18,7 @@ export class BookService {
     return this.repository.query(sql);
   }
 
-  getBookList(params: any = {}) {
+  async getBookList(params: any = {}) {
     let page = +params.page || 1;
     let pageSize = +params.pageSize || 20;
     const { title = '', author = '' } = params;
@@ -36,7 +36,9 @@ export class BookService {
       where += ` AND author LIKE '%${author}%'`;
     }
     const sql = `select * from book ${where} limit ${pageSize} offset ${(page - 1) * pageSize}`;
-    return this.repository.query(sql);
+    const res = await this.repository.query(sql);
+    console.log(res)
+    return res
   }
 
   countBookList(params: any = {}) {

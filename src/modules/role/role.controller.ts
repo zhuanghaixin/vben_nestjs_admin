@@ -6,11 +6,6 @@ import { wrapperResponse } from '../../utils';
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
-  @Get(':id')
-  getRole(@Param('id', ParseIntPipe) id: number) {
-    return this.roleService.findOne(id);
-  }
-
   @Get()
   getAllRole(@Query() query) {
     return wrapperResponse(
@@ -35,8 +30,37 @@ export class RoleController {
     );
   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.roleService.remove(id);
+  @Get('role_menu')
+  getRoleMenu(@Query('roleId') roleId: string | number) {
+    return wrapperResponse(
+      this.roleService.getRoleMenu(roleId),
+      '获取角色和菜单绑定关系成功',
+    );
+  }
+
+  @Post('role_menu')
+  createRoleMenu(@Body() body) {
+    return wrapperResponse(
+      this.roleService.createRoleMenu(body),
+      '新增角色和菜单绑定关系成功',
+    );
+  }
+
+  @Delete('role_menu')
+  removeRoleMenu(@Body() body) {
+    return wrapperResponse(
+      this.roleService.removeRoleMenu(body.roleId),
+      '删除角色和菜单绑定关系成功',
+    );
+  }
+
+  // @Delete(':id')
+  // remove(@Param('id', ParseIntPipe) id: number) {
+  //   return this.roleService.remove(id);
+  // }
+
+  @Get(':id')
+  getRole(@Param('id', ParseIntPipe) id: number) {
+    return this.roleService.findOne(id);
   }
 }
