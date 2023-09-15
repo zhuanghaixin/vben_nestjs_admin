@@ -54,6 +54,70 @@ export class RoleController {
     );
   }
 
+  @Get('auth')
+  getAuthList(@Query() query) {
+    return wrapperResponse(
+      this.roleService.getAuthList(query),
+      '获取权限数据成功',
+    );
+  }
+
+  @Post('auth')
+  createAuth(@Body() body) {
+    return wrapperResponse(
+      this.roleService.createAuth(body),
+      '新增权限成功',
+    );
+  }
+
+  @Put('auth')
+  updateAuth(@Body() body) {
+    return wrapperResponse(
+      this.roleService.updateAuth(body),
+      '编辑权限成功',
+    );
+  }
+
+  @Post('role_auth')
+  createRoleAuth(@Body() body) {
+    return wrapperResponse(
+      this.roleService.createRoleAuth(body),
+      '新增角色和权限绑定关系成功',
+    );
+  }
+
+  @Delete('role_auth')
+  removeRoleAuth(@Body() body) {
+    return wrapperResponse(
+      this.roleService.removeRoleAuth(body),
+      '删除角色和权限绑定关系成功',
+    );
+  }
+
+  @Delete('auth')
+  removeAuth(@Body() body) {
+    return wrapperResponse(
+      this.roleService.removeAuth(body.id),
+      '删除权限成功',
+    );
+  }
+
+  @Get('role_auth')
+  getRoleAuth(@Query('roleId') roleId: string | number) {
+    return wrapperResponse(
+      this.roleService.getRoleAuth(roleId),
+      '获取角色和权限绑定关系成功',
+    );
+  }
+
+  @Get('role_auth/get_auth_by_role')
+  getRoleAuthByRoleName(@Query('roleName') roleName: string | number) {
+    return wrapperResponse(
+      this.roleService.getRoleAuthByRoleName(roleName),
+      '获取角色和权限绑定关系成功',
+    );
+  }
+
   // @Delete(':id')
   // remove(@Param('id', ParseIntPipe) id: number) {
   //   return this.roleService.remove(id);

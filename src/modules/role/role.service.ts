@@ -108,4 +108,100 @@ export class RoleService {
     const sql = `SELECT roleId, menuId FROM role_menu WHERE roleId=${roleId}`;
     return this.roleRepository.query(sql);
   }
+
+  getAuthList(query) {
+    const { key } = query;
+    let where = '1=1';
+    if (key) {
+      where += ` AND \`key\` LIKE "%${key}%"`;
+    }
+    const sql = `SELECT * FROM auth WHERE ${where}`;
+    return this.roleRepository.query(sql);
+  }
+
+  createAuth(params) {
+    const { key = '', name = '', remark = '' } = params;
+    const insertSql = `INSERT INTO auth(
+        \`key\`,
+        name,
+        remark
+      ) VALUES(
+        '${key}',
+        '${name}',
+        '${remark}'
+      )`;
+    return this.roleRepository.query(insertSql);
+  }
+
+  updateAuth(params) {
+    const { name, remark, id } = params;
+    const setSql = [];
+    if (name || remark) {
+      name && setSql.push(`name="${name}"`);
+      remark && setSql.push(`remark="${remark}"`);
+      const updateSql = `UPDATE auth SET ${setSql.join(',')} WHERE id="${id}"`;
+      return this.roleRepository.query(updateSql);
+    } else {
+      return Promise.resolve({});
+    }
+  }
+
+  async createRoleAuth(params) {
+    const { roleId, authId } = params;
+    const insertSql = `INSERT INTO role_auth(
+        roleId,
+        authId
+      ) VALUES(
+        '${roleId}',
+        '${authId}'
+      )`;
+    // 建立 roleId 和 authId 的绑定关系
+    return await this.roleRepository.query(insertSql);
+  }
+
+  removeRoleAuth(body) {
+    if (body.roleId) {
+      const sql = `DELETE FROM role_auth WHERE roleId='${body.roleId}'`;
+      return this.roleRepository.query(sql);
+    } else if (body.authId) {
+      const sql = `DELETE FROM role_auth WHERE authId='${body.authId}'`;
+      return this.roleRepository.query(sql);
+    } else {
+      return Promise.resolve({});
+    }
+  }
+
+  getRoleAuth(roleId) {
+    const sql = `SELECT roleId, authId FROM role_auth WHERE roleId=${roleId}`;
+    return this.roleRepository.query(sql);
+  }
+
+  async getRoleAuthByRoleName(roleName) {
+    roleName = JSON.parse(roleName);
+    roleName = roleName.map((role) => `"${role}"`);
+    const where = `WHERE 1=1 AND name IN (${roleName.join(',')})`;
+    const sql = `SELECT id, name FROM role ${where}`;
+    const roleList = await this.roleRepository.query(sql);
+    const roleIds = roleList.map((role) => role.id);
+    const authWhere = `WHERE 1=1 AND roleId IN (${roleIds.join(',')})`;
+    const authSql = `SELECT roleId, authId FROM role_auth ${authWhere}`;
+    const authList = await this.roleRepository.query(authSql);
+    let authIds = authList.map((auth) => auth.authId);
+    const authSet = new Set();
+    authIds.forEach((id) => authSet.add(id));
+    authIds = Array.from(authSet);
+    const authInfo = await this.roleRepository.query(`
+      SELECT * FROM auth WHERE id IN (${authIds.join(',')})
+    `);
+    return authInfo;
+  }
+
+  removeAuth(authId) {
+    if (authId) {
+      const sql = `DELETE FROM auth WHERE id='${authId}'`;
+      return this.roleRepository.query(sql);
+    } else {
+      return Promise.resolve({});
+    }
+  }
 }
