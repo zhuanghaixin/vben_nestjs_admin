@@ -6,6 +6,8 @@ import { Book } from './book.entity';
 import { Repository } from 'typeorm';
 import EpubBook from './epub-book';
 
+const AUTH_LIST = ['BusinessandManagement'];
+
 @Injectable()
 export class BookService {
   constructor(
@@ -18,7 +20,24 @@ export class BookService {
     return this.repository.query(sql);
   }
 
-  async getBookList(params: any = {}) {
+  async getCategoryAuth(userid) {
+    // 获取用户对应的权限
+    const userSql = `SELECT * FROM admin_user WHERE id = ${userid}`;
+    const user = await this.repository.query(userSql);
+    let [{ role }] = user;
+    role = JSON.parse(role);
+    role = role.map((item) => `"${item}"`);
+    const authSql = `
+        SELECT * FROM auth WHERE id IN (
+            SELECT DISTINCT authId FROM role_auth WHERE roleId in (
+                SELECT id FROM role WHERE \`name\` IN (${role.join(',')})))`;
+    const authList = await this.repository.query(authSql);
+    let categoryAuth = authList.filter((auth) => AUTH_LIST.includes(auth.key));
+    categoryAuth = categoryAuth.map((category) => `"${category.key}"`);
+    return categoryAuth;
+  }
+
+  async getBookList(params: any = {}, userid) {
     let page = +params.page || 1;
     let pageSize = +params.pageSize || 20;
     const { title = '', author = '' } = params;
@@ -35,13 +54,17 @@ export class BookService {
     if (author) {
       where += ` AND author LIKE '%${author}%'`;
     }
+    const categoryAuth = await this.getCategoryAuth(userid);
+    if (categoryAuth.length > 0) {
+      where += ` AND categoryText IN (${categoryAuth.join(',')})`;
+    }
     const sql = `select * from book ${where} limit ${pageSize} offset ${(page - 1) * pageSize}`;
     const res = await this.repository.query(sql);
-    console.log(res)
+    // console.log(res)
     return res
   }
 
-  countBookList(params: any = {}) {
+  async countBookList(params: any = {}, userid) {
     const { title = '', author = '' } = params;
     let where = 'where 1=1';
     if (title) {
@@ -49,6 +72,10 @@ export class BookService {
     }
     if (author) {
       where += ` AND author LIKE '%${author}%'`;
+    }
+    const categoryAuth = await this.getCategoryAuth(userid);
+    if (categoryAuth.length > 0) {
+      where += ` AND categoryText IN (${categogitstatusgit branchryAuth.join(',')})`;
     }
     const sql = `select count(*) as count from book ${where}`;
     return this.repository.query(sql);

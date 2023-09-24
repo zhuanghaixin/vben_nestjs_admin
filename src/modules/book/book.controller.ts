@@ -11,6 +11,7 @@ import {
   Query,
   UploadedFile,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BookService } from './book.service';
@@ -21,10 +22,11 @@ export class BookController {
   constructor(private readonly bookService: BookService) {}
 
   @Get()
-  getBookList(@Query() params) {
+  getBookList(@Query() params, @Request() request) {
+    const { user: { userid } } = request;
     return wrapperCountResponse(
-      this.bookService.getBookList(params),
-      this.bookService.countBookList(params),
+      this.bookService.getBookList(params, userid),
+      this.bookService.countBookList(params, userid),
       '获取图书列表成功',
     );
   }

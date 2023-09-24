@@ -190,10 +190,14 @@ export class RoleService {
     const authSet = new Set();
     authIds.forEach((id) => authSet.add(id));
     authIds = Array.from(authSet);
-    const authInfo = await this.roleRepository.query(`
+    if (authIds.length === 0) {
+      return authIds;
+    } else {
+      const authInfo = await this.roleRepository.query(`
       SELECT * FROM auth WHERE id IN (${authIds.join(',')})
     `);
-    return authInfo;
+      return authInfo;
+    }
   }
 
   removeAuth(authId) {
