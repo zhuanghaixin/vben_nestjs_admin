@@ -75,7 +75,7 @@ export class BookService {
     }
     const categoryAuth = await this.getCategoryAuth(userid);
     if (categoryAuth.length > 0) {
-      where += ` AND categoryText IN (${categogitstatusgit branchryAuth.join(',')})`;
+      where += ` AND categoryText IN (${categoryAuth.join(',')})`;
     }
     const sql = `select count(*) as count from book ${where}`;
     return this.repository.query(sql);
