@@ -17,7 +17,7 @@ const { username, password } = getMysqlUsernameAndPassword();
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '47.99.166.157',
+      host: '127.0.0.1',
       port: 3306,
       username,
       password,

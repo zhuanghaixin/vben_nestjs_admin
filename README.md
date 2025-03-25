@@ -36,4 +36,4 @@ https://www.imooc.com/video/17776
 链接: https://pan.baidu.com/s/1kh_BS_oZS8GQMZkgplK_GA 提取码: 8p6d
 
 ### Nginx服务器搭建
-http://www.youbaobao.xyz/admin-docs/guide/exercise/prepare.html
+http://www.youbaobao.xyz/admin-docs/guide/exercise/prepare.html# vben_nestjs_admin
