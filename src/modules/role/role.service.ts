@@ -176,26 +176,58 @@ export class RoleService {
     return this.roleRepository.query(sql);
   }
 
+  /**
+   * 根据角色名称获取对应的权限信息
+   * @param roleName 角色名称数组的字符串形式
+   * @returns 返回角色对应的权限信息列表
+   */
   async getRoleAuthByRoleName(roleName) {
-    roleName = JSON.parse(roleName);
-    roleName = roleName.map((role) => `"${role}"`);
+    console.log('roleName=============================', roleName);
+    // 检查roleName是否为字符串，如果是则使用split转换为数组
+    if (typeof roleName === 'string') {
+      // 假设roleName是以逗号分隔的字符串，使用split方法转换为数组
+      roleName = roleName.split(',');
+    }
+    console.log('roleNameA=============================', roleName);
+    // 为每个角色名称添加单引号，以便在SQL查询中使用
+    roleName = roleName.map((role) => `'${role}'`);
+    console.log('roleNameB=============================', roleName);
+    
+    // 构建查询角色信息的SQL条件
     const where = `WHERE 1=1 AND name IN (${roleName.join(',')})`;
+    // 构建完整的SQL查询语句，获取指定角色名称的角色ID和名称
     const sql = `SELECT id, name FROM role ${where}`;
+    // 执行查询，获取角色列表
     const roleList = await this.roleRepository.query(sql);
+    console.log('roleList=============================', roleList);
+    // 从角色列表中提取所有角色ID
     const roleIds = roleList.map((role) => role.id);
+    
+    // 构建查询角色权限关系的SQL条件
     const authWhere = `WHERE 1=1 AND roleId IN (${roleIds.join(',')})`;
+    // 构建完整的SQL查询语句，获取角色与权限的绑定关系
     const authSql = `SELECT roleId, authId FROM role_auth ${authWhere}`;
+    // 执行查询，获取权限绑定列表
     const authList = await this.roleRepository.query(authSql);
+    
+    // 从权限绑定列表中提取所有权限ID
     let authIds = authList.map((auth) => auth.authId);
+    
+    // 使用Set去重，避免重复的权限ID
     const authSet = new Set();
     authIds.forEach((id) => authSet.add(id));
+    // 将Set转换回数组
     authIds = Array.from(authSet);
+    console.log('authIds', authIds);
+    // 如果没有找到任何权限ID，则直接返回空数组
     if (authIds.length === 0) {
       return authIds;
     } else {
+      // 否则，查询这些权限ID对应的完整权限信息
       const authInfo = await this.roleRepository.query(`
       SELECT * FROM auth WHERE id IN (${authIds.join(',')})
     `);
+      // 返回权限信息列表
       return authInfo;
     }
   }
